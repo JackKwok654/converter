@@ -3,12 +3,14 @@ package com.jack.currency.converter.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jack.currency.converter.dto.SymbolDTO;
 import com.jack.currency.converter.exception.CommonException;
+import com.jack.currency.converter.exception.NoContentException;
 import com.jack.currency.converter.exception.ResponseFailException;
 import com.jack.currency.converter.service.SymbolService;
 import com.jack.currency.converter.webclient.ExchangeRateWebClient;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -24,7 +26,10 @@ public class SymbolServiceImpl implements SymbolService {
 
         try {
             result = exchangerateWebClient.getSymbols();
-        }catch (ResponseFailException | JsonProcessingException e) {
+            if (CollectionUtils.isEmpty(result)) {
+                throw new NoContentException();
+            }
+        }catch (ResponseFailException | JsonProcessingException | NoContentException e) {
             throw e;
         } catch (Exception unknown) {
             log.error("[getSymbols] Unknown exception found: ", unknown);

@@ -7,15 +7,26 @@ import com.jack.currency.converter.dto.SymbolDTO;
 import com.jack.currency.converter.exception.CommonException;
 import com.jack.currency.converter.exception.ResponseFailException;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 
 @Log4j2
 @Component
 public class ExchangeRateWebClient {
-    WebClient client = WebClient.create("https://api.exchangerate.host");
+    @Value("${exchangerate.host:https://api.exchangerate.host}")
+    private String clientHost;
+
+    private WebClient client;
+
+    @PostConstruct
+    private void init() {
+        log.info("[init] clientHost: {}", clientHost);
+        client = WebClient.create(clientHost);
+    }
 
     public List<SymbolDTO> getSymbols() throws JsonProcessingException, CommonException {
         final List<SymbolDTO> result = new ArrayList<>();

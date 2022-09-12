@@ -1,6 +1,6 @@
 package com.jack.currency.converter.exception;
 
-public class CommonException extends Exception {
+public class CommonException extends RuntimeException {
     public CommonException() {
     }
 
